@@ -6,8 +6,10 @@ STACKSEG ENDS
 ; Matrix segment.
 DATASEG SEGMENT PARA 'DATA'
     DECR DW 0
+    STEP DW 0
     ROWS DB ?
-    COLS DB ?
+    COLS DB 0
+    COLSDIVTWO DB ?
     MATRIX DB 9 * 9 DUP(?)
 DATASEG ENDS
 
@@ -76,6 +78,38 @@ MAIN:
 
     CALL CRLF
 
+    MOV AH, 0
+    MOV AL, COLS 
+    MOV BL, 2
+    DIV BL
+
+    MOV COLSDIVTWO, AL
+
+    MOV DECR, 0
+
+    MOV BX, 0
+    MOV CL, ROWS
+    EXCHANGE:
+        MOV CL, COLSDIVTWO
+        MOV DI, 0
+        COLEX:
+            MOV AL, MATRIX[BX]
+            MOV SI, BX
+            MOV DH, COLS
+            ADD SI, DX
+            SUB SI, DI
+            MOV DL, MATRIX[SI]
+            MOV MATRIX[SI], AL
+            MOV MATRIX[BX], DL
+            ADD DI, 1
+            ADD BX, 1
+            LOOP COLEX
+        MOV CL, ROWS
+        MOV SI, DECR
+        SUB CX, SI
+        ADD DECR, 1
+        LOOP EXCHANGE
+
     MOV DECR, 0
 
     MOV BX, 0
@@ -94,6 +128,7 @@ MAIN:
         SUB CX, SI
         ADD DECR, 1
         LOOP OUTMAT
+
 
     ; Program termination.
     MOV AX, 4C00H
