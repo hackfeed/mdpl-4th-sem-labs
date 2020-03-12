@@ -69,24 +69,30 @@ MAIN:
             LOOP INROW
         CALL CRLF
         MOV CL, ROWS
-        MOV DX, DECR
-        SUB CX, DX
+        MOV SI, DECR
+        SUB CX, SI
         ADD DECR, 1
         LOOP INMAT
 
     CALL CRLF
-    
-    MOV AL, ROWS
-    MOV BL, COLS
-    MUL BL
-    MOV CX, AX
+
+    MOV DECR, 0
 
     MOV BX, 0
+    MOV CL, ROWS
     OUTMAT:
-        MOV DL, MATRIX[BX]
-        CALL OUTSYMB
+        MOV CL, COLS
+        OUTROW:
+            MOV DL, MATRIX[BX]
+            CALL OUTSYMB
+            ADD BX, 1
+            CALL PRINTSPACE
+            LOOP OUTROW
         CALL CRLF
-        ADD BX, 1
+        MOV CL, ROWS
+        MOV SI, DECR
+        SUB CX, SI
+        ADD DECR, 1
         LOOP OUTMAT
 
     ; Program termination.
