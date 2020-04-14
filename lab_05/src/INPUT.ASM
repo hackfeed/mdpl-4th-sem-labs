@@ -4,13 +4,14 @@ PUBLIC INDECUNSGN
 PUBLIC NUMBER
 
 ; Data segment.
-DATASEG SEGMENT PARA 'DATA'
+DATASEG SEGMENT PARA PUBLIC 'DATA'
+    DB 100 DUP(10)
     NUMBER DW 0
     INMSG DB 'Enter unsigned decimal number (from 0 to 65535): $', 13, 10
 DATASEG ENDS
 
 ; Main code segment.
-CODESEG SEGMENT PARA 'CODE'
+CODESEG SEGMENT PARA PUBLIC 'CODE'
     ASSUME CS:CODESEG, DS:DATASEG
 
 INCMD PROC NEAR
@@ -29,17 +30,18 @@ INDECUNSGN PROC NEAR
     INT 21H
 
     MOV BX, 0
-    MOV AH, 1
 
     INSYMB:
+        MOV AH, 1
         INT 21H
-        CMP AL, 10
+        CMP AL, 13
         JE ENDINP
-        MOV AX, BX
-        MOV CL, 10
-        MUL CL
+        MOV CL, AL
+        MOV AX, 10
+        MUL BX
         MOV BX, AX
-        ADD BL, AL
+        SUB CL, '0'
+        ADD BL, CL
         JMP INSYMB
 
     ENDINP:
