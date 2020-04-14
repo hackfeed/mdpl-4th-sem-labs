@@ -5,9 +5,8 @@ PUBLIC NUMBER
 
 ; Data segment.
 DATASEG SEGMENT PARA PUBLIC 'DATA'
-    DB 100 DUP(10)
     NUMBER DW 0
-    INMSG DB 'Enter unsigned decimal number (from 0 to 65535): $', 13, 10
+    INMSG DB 'Enter unsigned decimal number (from 0 to 65535): $'
 DATASEG ENDS
 
 ; Main code segment.

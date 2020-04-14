@@ -1,5 +1,6 @@
 EXTRN INCMD: NEAR
 EXTRN INDECUNSGN: NEAR
+EXTRN OUTUHEX: NEAR
 ;EXTRN OUTBINSGN: NEAR
 
 EXTRN CRLF: NEAR
@@ -17,7 +18,7 @@ DATASEG SEGMENT PARA PUBLIC 'DATA'
         DB '2. Convert to signed binary;', 13, 10, 10
         DB '3. Exit program.', 13, 10, 10
         DB 'Choose action: $'
-    ACTIONS DW INDECUNSGN, EXIT
+    ACTIONS DW INDECUNSGN, OUTUHEX, EXIT
 DATASEG ENDS
 
 ; Main code segment.
