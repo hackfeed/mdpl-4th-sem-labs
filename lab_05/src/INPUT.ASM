@@ -40,8 +40,9 @@ INDECUNSGN PROC NEAR
         MOV AX, 10
         MUL BX
         MOV BX, AX
+        MOV CH, 0
         SUB CL, '0'
-        ADD BL, CL
+        ADD BX, CX
         JMP INSYMB
 
     ENDINP:
