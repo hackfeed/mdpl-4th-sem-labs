@@ -7,7 +7,8 @@ PUBLIC TOUHEX
 
 ; Data segment.
 DATASEG SEGMENT PARA PUBLIC 'DATA'
-    DIVISOR DB 16
+    MASK16 DW 15
+    MASK2 DW 1
     UHEX DB 4 DUP('0'), '$'
     SBIN DB 16 DUP('0'), '$'
 DATASEG ENDS
@@ -17,16 +18,25 @@ CODESEG SEGMENT PARA PUBLIC 'CODE'
 
 TOUHEX PROC NEAR
     MOV AX, NUMBER
-    MOV CX, 4
     MOV BX, 3
     GETHEX:
-        DIV DIVISOR
-        ADD AH, '0'
-        MOV UHEX[BX], AH
+        MOV DX, AX
+        AND DX, MASK16
+        CMP DL, 10
+        JL ISDIGIT
+        ADD DL, 7
+        ISDIGIT:
+        ADD DL, '0'
+        MOV UHEX[BX], DL
+        MOV CL, 4
+        SAR AX, CL
         DEC BX
-        LOOP GETHEX
+        CMP BX, -1
+        JNE GETHEX
     RET
 TOUHEX ENDP
+
+
 
 CODESEG ENDS
 END
