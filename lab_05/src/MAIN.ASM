@@ -1,16 +1,14 @@
 EXTRN INCMD: NEAR
 EXTRN INDECUNSGN: NEAR
 EXTRN OUTUHEX: NEAR
-;EXTRN OUTBINSGN: NEAR
+EXTRN OUTSBIN: NEAR
 
 EXTRN CRLF: NEAR
 
-; Stack segment.
 STACKSEG SEGMENT PARA STACK 'STACK'
     DB 200H DUP(0)
 STACKSEG ENDS
 
-; Data segment.
 DATASEG SEGMENT PARA PUBLIC 'DATA'
     MENU DB 'Available actions:', 13, 10, 10
         DB '0. Input unsigned decimal number;', 13, 10
@@ -18,10 +16,9 @@ DATASEG SEGMENT PARA PUBLIC 'DATA'
         DB '2. Convert to signed binary;', 13, 10, 10
         DB '3. Exit program.', 13, 10, 10
         DB 'Choose action: $'
-    ACTIONS DW INDECUNSGN, OUTUHEX, EXIT
+    ACTIONS DW INDECUNSGN, OUTUHEX, OUTSBIN, EXIT
 DATASEG ENDS
 
-; Main code segment.
 CODESEG SEGMENT PARA PUBLIC 'CODE'
     ASSUME CS:CODESEG, DS:DATASEG, SS:STACKSEG
 
@@ -37,9 +34,7 @@ EXIT PROC NEAR
     INT 21H
 EXIT ENDP
 
-; Main code segment.
 MAIN:
-    ; DATASEG preparation.
     MOV AX, DATASEG
     MOV DS, AX
 
