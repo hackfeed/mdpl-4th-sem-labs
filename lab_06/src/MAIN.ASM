@@ -1,0 +1,127 @@
+.MODEL TINY
+
+CODE SEGMENT
+    ASSUME CS:CODE, DS:CODE
+    ORG 100H
+
+MAIN:
+    JMP INSTALL
+    OLD9H DD ?
+    ISINSTALLED DW 1
+    SUBST DB 100 DUP(?)
+    SUBSTMSG DB 'Enter substitution assigned to F1 key: $'
+    SUBSTLEN DW 0
+
+INSUBST PROC
+    MOV AH, 9
+    MOV DX, OFFSET SUBSTMSG
+    INT 21H
+
+    MOV SI, 0
+    INSYMB:
+        MOV AH, 1
+        INT 21H
+        CMP AL, 13
+        JE ENDINP
+        MOV SUBST[SI], AL
+        INC SI
+        JMP INSYMB
+    ENDINP:
+    DEC SI
+    MOV SUBSTLEN, SI
+    RET
+INSUBST ENDP
+
+MY9H PROC
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+
+    PUSH ES
+    PUSH DS
+
+    PUSHF
+
+    CALL CS:OLD9H
+
+    IN AL, 60H
+    CMP AL, 3BH
+    JNE QUIT
+
+    MOV DI, 0
+    MOV SI, CS:SUBSTLEN
+    OUTSUBST:
+        CMP SI, -1
+        JE QUIT
+        MOV AH, 5
+        MOV CH, 0
+        MOV CL, CS:SUBST[DI]
+        INC DI
+        DEC SI
+        INT 16H
+        CMP AL, 0
+        JNE QUIT
+        JMP OUTSUBST
+
+    QUIT:
+        POP DS
+        POP ES
+
+        POP DX
+        POP CX
+        POP BX
+        POP AX
+
+        IRET
+MY9H ENDP
+
+INSTALL:
+    MOV AX, 3509H
+    INT 21H
+
+    CMP ES:ISINSTALLED, 1
+    JE UNINSTALL
+
+    CALL INSUBST
+
+    MOV WORD PTR OLD9H, BX
+    MOV WORD PTR OLD9H + 2, ES
+
+    MOV AX, 2509H
+    MOV DX, OFFSET MY9H
+    INT 21H
+
+    MOV DX, OFFSET INSTMSG
+    MOV AH, 9
+    INT 21H
+
+    MOV DX, OFFSET INSTALL
+    INT 27H
+
+UNINSTALL:
+    PUSH ES
+    PUSH DS
+
+    MOV DX, WORD PTR ES:OLD9H
+    MOV DS, WORD PTR ES:OLD9H + 2
+    MOV AX, 2509H
+    INT 21H
+
+    POP DS
+    POP ES
+
+    MOV AH, 49H
+    INT 21H
+
+    MOV DX, OFFSET UNINSTMSG
+    MOV AH, 9H
+    INT 21H
+
+    MOV AX, 4C00H
+    INT 21H
+
+    INSTMSG   DB 'SUBSTITUTION ASSIGNED!$'
+    UNINSTMSG DB 'SUBSTITUTION UNASSIGNED!$'
+CODE ENDS
+END MAIN
