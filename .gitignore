@@ -2,3 +2,7 @@
 *.EXE
 *.OBJ
 *.COM
+
+# C files
+*.o
+*.exe
