@@ -1,11 +1,23 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
-int getrand(int left, int right)
+#define CYPHER 1337
+
+int getcyph(int num, int cs)
 {
-    srand(time(NULL));
-    return (rand() % (left - right + 1)) + left;
+    int sum, digits = 0;
+
+    while (num > 0)
+    {
+        sum += num % cs;
+        num /= cs;
+    }
+
+    for (int i = 0; i < digits; ++i)
+    {
+        sum += cs - 1;
+    }
+
+    return sum;
 }
 
 int cmpnum(int first, int second)
@@ -15,22 +27,22 @@ int cmpnum(int first, int second)
 
 int main()
 {
-    int num, randnum, left, right;
+    int num, cs, cypher;
 
-    printf("Enter range for random numbers: ");
-    scanf("%d %d", &left, &right);
-    printf("Try your luck! Enter the number: ");
+    printf("Enter the count system: ");
+    scanf("%d", &cs);
+    printf("Enter the passcode: ");
     scanf("%d", &num);
 
-    randnum = getrand(left, right);
+    cypher = getcyph(num, cs);
 
-    if (!cmpnum(num, randnum))
+    if (!cmpnum(cypher, CYPHER))
     {
-        printf("Not today! Guessed number is %d", randnum);
+        printf("Wrong passcode! Access denied!");
     }
     else
     {
-        printf("You are lucky! You got it!");
+        printf("Access given!");
     }
 
     return 0;
