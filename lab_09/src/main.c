@@ -1,10 +1,10 @@
 #include <stdio.h>
 
-#define CYPHER 1337
+#define CYPHER 88
 
 int getcyph(int num, int cs)
 {
-    int sum, digits = 0;
+    int sum = 0, digits = 0;
 
     while (num > 0)
     {
