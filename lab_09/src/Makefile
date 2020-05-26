@@ -10,5 +10,8 @@ disnasm:
 disintel:
 	objdump -Mintel -d app.exe > app_disintel.txt
 
+brut:
+	python brut.py
+
 clean:
 	rm -f *.o *.exe *.txt
