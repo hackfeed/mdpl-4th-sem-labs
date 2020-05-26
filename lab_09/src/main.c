@@ -10,6 +10,7 @@ int getcyph(int num, int cs)
     {
         sum += num % cs;
         num /= cs;
+        digits++;
     }
 
     for (int i = 0; i < digits; ++i)
