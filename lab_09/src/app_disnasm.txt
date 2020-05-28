@@ -2,7 +2,7 @@
 app.exe:     file format elf64-x86-64
 
 
-Disassembly of section .init:
+Disassembly of section .init: # Startup section
 
 0000000000001000 <_init>:
     1000:	f3 0f 1e fa          	endbr64 
@@ -14,7 +14,7 @@ Disassembly of section .init:
     1016:	48 83 c4 08          	add    $0x8,%rsp
     101a:	c3                   	retq   
 
-Disassembly of section .plt:
+Disassembly of section .plt: # Procedure Linkage Table
 
 0000000000001020 <.plt>:
     1020:	ff 35 e2 2f 00 00    	pushq  0x2fe2(%rip)        # 4008 <_GLOBAL_OFFSET_TABLE_+0x8>
@@ -36,7 +36,7 @@ Disassembly of section .plt:
     1056:	68 02 00 00 00       	pushq  $0x2
     105b:	e9 c0 ff ff ff       	jmpq   1020 <.plt>
 
-Disassembly of section .text:
+Disassembly of section .text: # Main section
 
 0000000000001060 <_start>:
     1060:	f3 0f 1e fa          	endbr64 
@@ -112,49 +112,49 @@ Disassembly of section .text:
     1154:	e9 67 ff ff ff       	jmpq   10c0 <register_tm_clones>
 
 0000000000001159 <getcyph>:
-    1159:	55                   	push   %rbp
-    115a:	48 89 e5             	mov    %rsp,%rbp
-    115d:	89 7d ec             	mov    %edi,-0x14(%rbp)
-    1160:	89 75 e8             	mov    %esi,-0x18(%rbp)
-    1163:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)
-    116a:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
-    1171:	eb 1a                	jmp    118d <getcyph+0x34>
-    1173:	8b 45 ec             	mov    -0x14(%rbp),%eax
-    1176:	99                   	cltd   
-    1177:	f7 7d e8             	idivl  -0x18(%rbp)
-    117a:	89 d0                	mov    %edx,%eax
-    117c:	01 45 f4             	add    %eax,-0xc(%rbp)
-    117f:	8b 45 ec             	mov    -0x14(%rbp),%eax
-    1182:	99                   	cltd   
-    1183:	f7 7d e8             	idivl  -0x18(%rbp)
-    1186:	89 45 ec             	mov    %eax,-0x14(%rbp)
-    1189:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
-    118d:	83 7d ec 00          	cmpl   $0x0,-0x14(%rbp)
-    1191:	7f e0                	jg     1173 <getcyph+0x1a>
-    1193:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
-    119a:	eb 0d                	jmp    11a9 <getcyph+0x50>
-    119c:	8b 45 e8             	mov    -0x18(%rbp),%eax
-    119f:	83 e8 01             	sub    $0x1,%eax
-    11a2:	01 45 f4             	add    %eax,-0xc(%rbp)
-    11a5:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
-    11a9:	8b 45 fc             	mov    -0x4(%rbp),%eax
-    11ac:	3b 45 f8             	cmp    -0x8(%rbp),%eax
-    11af:	7c eb                	jl     119c <getcyph+0x43>
-    11b1:	8b 45 f4             	mov    -0xc(%rbp),%eax
-    11b4:	5d                   	pop    %rbp
-    11b5:	c3                   	retq   
+    1159:	55                   	push   %rbp                # Save register
+    115a:	48 89 e5             	mov    %rsp,%rbp           # Use register in the code
+    115d:	89 7d ec             	mov    %edi,-0x14(%rbp)    # arg1
+    1160:	89 75 e8             	mov    %esi,-0x18(%rbp)    # arg2
+    1163:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)     # a = 0
+    116a:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)     # b = 0
+    1171:	eb 1a                	jmp    118d <getcyph+0x34> # Jump to *
+    1173:	8b 45 ec             	mov    -0x14(%rbp),%eax    # eax = arg1
+    1176:	99                   	cltd                       # Convert double
+    1177:	f7 7d e8             	idivl  -0x18(%rbp)         # (int) eax /= arg2
+    117a:	89 d0                	mov    %edx,%eax           # Mod
+    117c:	01 45 f4             	add    %eax,-0xc(%rbp)     # a += mod
+    117f:	8b 45 ec             	mov    -0x14(%rbp),%eax    # eax = arg1
+    1182:	99                   	cltd                       # Conver to double
+    1183:	f7 7d e8             	idivl  -0x18(%rbp)         # arg1 /= arg2
+    1186:	89 45 ec             	mov    %eax,-0x14(%rbp)    # arg1 = eax
+    1189:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)     # b += 1
+    118d:	83 7d ec 00          	cmpl   $0x0,-0x14(%rbp)    # * arg1 == 0?
+    1191:	7f e0                	jg     1173 <getcyph+0x1a> # if arg1 > 0 jump to 1171
+    1193:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)     # c = 0
+    119a:	eb 0d                	jmp    11a9 <getcyph+0x50> # Jump to **
+    119c:	8b 45 e8             	mov    -0x18(%rbp),%eax    # eax = arg2
+    119f:	83 e8 01             	sub    $0x1,%eax           # eax -= 1
+    11a2:	01 45 f4             	add    %eax,-0xc(%rbp)     # a += eax
+    11a5:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)     # c += 1
+    11a9:	8b 45 fc             	mov    -0x4(%rbp),%eax     # ** eax = c
+    11ac:	3b 45 f8             	cmp    -0x8(%rbp),%eax     # b == c?
+    11af:	7c eb                	jl     119c <getcyph+0x43> # is b < c jump to 119c
+    11b1:	8b 45 f4             	mov    -0xc(%rbp),%eax     # return a
+    11b4:	5d                   	pop    %rbp                # Pop saved registers
+    11b5:	c3                   	retq                       # End of function
 
 00000000000011b6 <cmpnum>:
-    11b6:	55                   	push   %rbp
-    11b7:	48 89 e5             	mov    %rsp,%rbp
-    11ba:	89 7d fc             	mov    %edi,-0x4(%rbp)
-    11bd:	89 75 f8             	mov    %esi,-0x8(%rbp)
-    11c0:	8b 45 fc             	mov    -0x4(%rbp),%eax
-    11c3:	3b 45 f8             	cmp    -0x8(%rbp),%eax
-    11c6:	0f 94 c0             	sete   %al
-    11c9:	0f b6 c0             	movzbl %al,%eax
-    11cc:	5d                   	pop    %rbp
-    11cd:	c3                   	retq   
+    11b6:	55                   	push   %rbp                # Save register
+    11b7:	48 89 e5             	mov    %rsp,%rbp           # Use register in the code
+    11ba:	89 7d fc             	mov    %edi,-0x4(%rbp)     # arg1
+    11bd:	89 75 f8             	mov    %esi,-0x8(%rbp)     # arg2
+    11c0:	8b 45 fc             	mov    -0x4(%rbp),%eax     # eax = arg1
+    11c3:	3b 45 f8             	cmp    -0x8(%rbp),%eax     # Compare arg1 with arg2
+    11c6:	0f 94 c0             	sete   %al                 # Set AL to result of cmp (1 or 0)
+    11c9:	0f b6 c0             	movzbl %al,%eax            # eax = al
+    11cc:	5d                   	pop    %rbp                # Pop saved register
+    11cd:	c3                   	retq                       # End of function
 
 00000000000011ce <main>:
     11ce:	55                   	push   %rbp
@@ -167,28 +167,28 @@ Disassembly of section .text:
     11e5:	48 8d 3d 1c 0e 00 00 	lea    0xe1c(%rip),%rdi        # 2008 <_IO_stdin_used+0x8>
     11ec:	b8 00 00 00 00       	mov    $0x0,%eax
     11f1:	e8 4a fe ff ff       	callq  1040 <printf@plt>
-    11f6:	48 8d 45 f0          	lea    -0x10(%rbp),%rax
-    11fa:	48 89 c6             	mov    %rax,%rsi
+    11f6:	48 8d 45 f0          	lea    -0x10(%rbp),%rax    # arg2
+    11fa:	48 89 c6             	mov    %rax,%rsi           # arg2 address
     11fd:	48 8d 3d 1d 0e 00 00 	lea    0xe1d(%rip),%rdi        # 2021 <_IO_stdin_used+0x21>
     1204:	b8 00 00 00 00       	mov    $0x0,%eax
     1209:	e8 42 fe ff ff       	callq  1050 <__isoc99_scanf@plt>
     120e:	48 8d 3d 0f 0e 00 00 	lea    0xe0f(%rip),%rdi        # 2024 <_IO_stdin_used+0x24>
     1215:	b8 00 00 00 00       	mov    $0x0,%eax
     121a:	e8 21 fe ff ff       	callq  1040 <printf@plt>
-    121f:	48 8d 45 ec          	lea    -0x14(%rbp),%rax
-    1223:	48 89 c6             	mov    %rax,%rsi
+    121f:	48 8d 45 ec          	lea    -0x14(%rbp),%rax    # arg1
+    1223:	48 89 c6             	mov    %rax,%rsi           # arg1 address
     1226:	48 8d 3d f4 0d 00 00 	lea    0xdf4(%rip),%rdi        # 2021 <_IO_stdin_used+0x21>
     122d:	b8 00 00 00 00       	mov    $0x0,%eax
     1232:	e8 19 fe ff ff       	callq  1050 <__isoc99_scanf@plt>
-    1237:	8b 55 f0             	mov    -0x10(%rbp),%edx
-    123a:	8b 45 ec             	mov    -0x14(%rbp),%eax
+    1237:	8b 55 f0             	mov    -0x10(%rbp),%edx    # arg2
+    123a:	8b 45 ec             	mov    -0x14(%rbp),%eax    # arg1
     123d:	89 d6                	mov    %edx,%esi
     123f:	89 c7                	mov    %eax,%edi
     1241:	e8 13 ff ff ff       	callq  1159 <getcyph>
-    1246:	89 45 f4             	mov    %eax,-0xc(%rbp)
-    1249:	8b 45 f4             	mov    -0xc(%rbp),%eax
-    124c:	be 58 00 00 00       	mov    $0x58,%esi
-    1251:	89 c7                	mov    %eax,%edi
+    1246:	89 45 f4             	mov    %eax,-0xc(%rbp)     # tmp = res of getcyph
+    1249:	8b 45 f4             	mov    -0xc(%rbp),%eax     # eax = tmp
+    124c:	be 58 00 00 00       	mov    $0x58,%esi          # arg2 = 88
+    1251:	89 c7                	mov    %eax,%edi           # arg1 = tmp
     1253:	e8 5e ff ff ff       	callq  11b6 <cmpnum>
     1258:	85 c0                	test   %eax,%eax
     125a:	75 13                	jne    126f <main+0xa1>
